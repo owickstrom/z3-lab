@@ -42,7 +42,7 @@
           buildInputs = with pkgs; [
             run
             watch
-            (python3.withPackages (
+            (python312.withPackages (
               ps: with ps; [
                 black
                 pyright
