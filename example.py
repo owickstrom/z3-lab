@@ -112,4 +112,4 @@ def eval(env: Env, expr: Expr) -> Value:
 
 example2 = Fun(["x", "y"], If(Gt("x", 431), If(Lt("y", 912), Fail(), "x"), "y"))
 
-print(eval({}, App(example2, [700, 300])))
+print(eval({}, App(example2, [1, 2])))
