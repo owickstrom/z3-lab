@@ -1,3 +1,4 @@
 [tool.pyright]
 
 reportWildcardImportFromLibrary = "none"
+reportIncompatibleMethodOverride = "none"
