@@ -14,15 +14,15 @@ def todo(msg: str | None):
 ##########################################
 
 
+type BoolLikeRef = BoolRef | Probe | Literal[False] | Literal[True]
+
 s = Solver()
 path: List[bool] = []
-constraints: List[BoolRef | Probe] = []
-
-T = TypeVar("T")
+constraints: List[BoolLikeRef] = []
 
 
 @dataclass
-class Proxy(Generic[T]):
+class Proxy[T]:
     sym: T
 
 
@@ -88,8 +88,21 @@ class IntProxy(Proxy[ArithRef]):
 
 
 @dataclass
+class StringProxy(Proxy):
+    sym: SeqRef
+
+    def __eq__(self, other):
+        if not isinstance(other, StringProxy):
+            other = StringProxy(StringVal(other))
+        return BoolProxy(self.sym == other.sym)
+
+    def __req__(self, other):
+        return self.__eq__(other)
+
+
+@dataclass
 class BoolProxy(Proxy):
-    sym: BoolRef | Probe
+    sym: BoolLikeRef
 
     def __bool__(self):
         global path, constraints
@@ -130,6 +143,8 @@ def test(f: Callable):
             return IntProxy(Int(name))
         elif ann == bool:
             return BoolProxy(Bool(name))
+        elif ann == str:
+            return StringProxy(String(name))
         else:
             return todo(f"support type: {ann}")
 
@@ -192,10 +207,26 @@ def other(x: int):
 test(other)
 
 
-def crashing(x: int):
-    match x:
-        case 4:
+type Things = Foo | Bar
+
+
+@dataclass
+class Foo:
+    x: int
+
+
+@dataclass
+class Bar:
+    y: str
+
+
+def crashing(x: int, y: str):
+    thing = Foo(x) if x < 10 else Bar(y)
+    match thing:
+        case Foo(4):
             assert False, "x must not be 4"
+        case Bar("no"):
+            assert False, 'y must not be "no"'
         case _:
             pass
 
