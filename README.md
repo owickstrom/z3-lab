@@ -2,6 +2,13 @@
 
 Various stuff with Z3 and Python.
 
+Dependencies:
+
+* Nix
+* Direnv
+
+Get started:
+
 ```
 $ direnv allow .
 $ python3 peer.py
