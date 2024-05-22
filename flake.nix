@@ -27,25 +27,15 @@
       system:
       let
         pkgs = import nixpkgs { inherit system; };
-
-        run = pkgs.writeShellScriptBin "python-run" ''
-          clear 
-          python3 example.py
-        '';
-
-        watch = pkgs.writeShellScriptBin "python-watch" ''
-          ${pkgs.fswatch}/bin/fswatch -o . | xargs -n1 ${run}/bin/python-run
-        '';
       in
       {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
-            run
-            watch
+            pyright
             (python312.withPackages (
               ps: with ps; [
+                termcolor
                 black
-                pyright
                 z3
               ]
             ))
